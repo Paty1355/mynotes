@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
-
 import 'package:notes/constants/routes.dart';
+import 'package:notes/utilities/show_error_dialog.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -63,21 +63,35 @@ class _LoginViewState extends State<LoginView> {
                   email: email,
                    password: password,
                    );
-                   Navigator.of(context)
+                   if (context.mounted) {Navigator.of(context)
                    .pushNamedAndRemoveUntil(
                     notesRoute,
                     (route) => false,
-                     );
+                     );} 
                  } on FirebaseAuthException catch(e){
-                  if (e.code == 'user-not-found'){
-                    devtools.log("User nout found");
+                  if (e.code == 'invalid-credential'){
+                    if (context.mounted){
+                      await showErrorDialog(
+                      context,
+                      'Incorrect data was provided',);
+                    }
                   }
-                  else if(e.code == 'wrong-password'){
-                    devtools.log ("Wrong password");
+                  else{
+                     if (context.mounted){
+                      await showErrorDialog(
+                      context,
+                      'Error: ${e.code}',);
+                    }
                   }
-                 
-                 } 
-                 // print(e.runtimeType); // typ wyjątku
+                  devtools.log(e.code.toString());   // typ wyjątku
+                 } catch(e){
+                  if (context.mounted){
+                      await showErrorDialog(
+                      context,
+                      'Error: ${e.toString()}',);
+                    }
+                 }
+             
               },child: const Text('Login'),),
               TextButton(
                 onPressed: (){
@@ -90,7 +104,5 @@ class _LoginViewState extends State<LoginView> {
           ),
     );
   }
-  
-
- 
 }
+
