@@ -17,7 +17,7 @@ class _NotesViewState extends State<NotesView> {
   late final NotesService _notesService;
   String get userEmail => AuthService.firebase()
       .currentUser!
-      .email!; //wykrzykniki bo zmienne nie opcjonalne
+      .email; //wykrzykniki bo zmienne nie opcjonalne
 
   @override
   void initState() {
